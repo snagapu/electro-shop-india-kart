@@ -23,20 +23,21 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     formData.append('mode', 'payonly');
     formData.append('chargetotal', formattedAmount);
     formData.append('currency', paymentData.currency);
-    formData.append('orderId', paymentData.orderId);
-    formData.append('responseSuccessURL', `${window.location.origin}/order-complete`);
-    formData.append('responseFailURL', `${window.location.origin}/payment?status=failed`);
+    formData.append('oid', paymentData.orderId);
+    formData.append('responseSuccessURL', `${window.location.origin}?status=success`);
+    formData.append('responseFailURL', `${window.location.origin}?status=failed`);
     formData.append('email', paymentData.customerEmail);
-    formData.append('billing_name', paymentData.customerName);
-    
-    // In a real implementation, you would typically:
-    // 1. Send this data to your backend
-    // 2. Backend would properly sign the request with your credentials
-    // 3. Backend would return the URL or form data to submit
+    formData.append('bname', paymentData.customerName);
     
     // For demo purposes, we'll directly redirect to the test URL
-    // WARNING: In production, you should NEVER do this from frontend - always use backend
     const url = 'https://test.ipg-online.com/connect/gateway/processing';
+    
+    console.log('Initiating hosted checkout with data:', {
+      amount: formattedAmount,
+      orderId: paymentData.orderId,
+      customerEmail: paymentData.customerEmail,
+      url: url
+    });
     
     // Create a form element to submit the data
     const form = document.createElement('form');
@@ -55,6 +56,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     
     // Add form to the document and submit it
     document.body.appendChild(form);
+    console.log('Submitting form to Fiserv');
     form.submit();
     
     // Clean up - remove the form after submission

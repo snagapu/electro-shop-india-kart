@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -34,8 +34,18 @@ type FormValues = z.infer<typeof formSchema>;
 const Payment: React.FC = () => {
   const { items, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [useHostedCheckout, setUseHostedCheckout] = useState(false);
+  const [useHostedCheckout, setUseHostedCheckout] = useState(true);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const paymentFailed = urlParams.get('paymentFailed');
+    
+    if (paymentFailed === 'true') {
+      toast.error("Payment failed. Please try again.");
+    }
+  }, [location]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -96,6 +106,13 @@ const Payment: React.FC = () => {
       const shippingThreshold = 5000;
       const shippingCost = totalPrice > shippingThreshold ? 0 : 499;
       const orderTotal = totalPrice + taxes + shippingCost;
+      
+      console.log("Initiating hosted checkout with:", {
+        amount: orderTotal,
+        orderId: orderId,
+        email: parsedUserDetails.email,
+        name: parsedUserDetails.name
+      });
       
       const success = await initiateHostedCheckout({
         amount: orderTotal,
