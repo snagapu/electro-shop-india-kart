@@ -39,13 +39,17 @@ const Payment: React.FC = () => {
   const [useHostedCheckout, setUseHostedCheckout] = useState(true);
 
   useEffect(() => {
+    if (!sessionStorage.getItem("userDetails") || items.length === 0) {
+      navigate("/checkout");
+    }
+    
     const urlParams = new URLSearchParams(location.search);
     const paymentFailed = urlParams.get('paymentFailed');
     
     if (paymentFailed === 'true') {
       toast.error("Payment failed. Please try again.");
     }
-  }, [location]);
+  }, [location, items, navigate]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -59,7 +63,6 @@ const Payment: React.FC = () => {
 
   const userDetails = sessionStorage.getItem("userDetails");
   if (!userDetails || items.length === 0) {
-    navigate("/checkout");
     return null;
   }
 
@@ -93,7 +96,10 @@ const Payment: React.FC = () => {
   };
 
   const onSubmit = async (values: FormValues) => {
+    if (isProcessing) return;
+    
     setIsProcessing(true);
+    console.log("Payment submission started, hosted checkout:", useHostedCheckout);
     
     if (useHostedCheckout) {
       const orderId = "ORD" + Math.floor(100000 + Math.random() * 900000);
@@ -115,7 +121,7 @@ const Payment: React.FC = () => {
       });
       
       try {
-        const success = await initiateHostedCheckout({
+        initiateHostedCheckout({
           amount: orderTotal,
           currency: 'INR',
           orderId: orderId,
@@ -123,10 +129,12 @@ const Payment: React.FC = () => {
           customerName: parsedUserDetails.name
         });
         
-        if (!success) {
-          setIsProcessing(false);
-          toast.error("Failed to initiate payment. Please try again.");
-        }
+        setTimeout(() => {
+          if (document.body) {
+            setIsProcessing(false);
+            toast.error("Payment gateway did not load. Please try again.");
+          }
+        }, 5000);
       } catch (error) {
         console.error("Error in payment submission:", error);
         setIsProcessing(false);

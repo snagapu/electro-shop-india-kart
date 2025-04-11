@@ -63,23 +63,13 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
       form.appendChild(hiddenField);
     }
     
-    // Add form to the document and submit it
     document.body.appendChild(form);
-    console.log('Submitting form to Fiserv');
+    console.log('Form ready for submission with fields:', Object.fromEntries(formData));
     
-    // Force the form to be submitted synchronously to avoid any timing issues
-    setTimeout(() => {
-      form.submit();
-      console.log('Form submitted');
-    }, 100);
-    
-    // Clean up - remove the form after submission
-    setTimeout(() => {
-      if (document.body.contains(form)) {
-        document.body.removeChild(form);
-        console.log('Form removed from document');
-      }
-    }, 1000);
+    // Important: We need to submit the form directly, not in a timeout
+    // Direct submission ensures browser navigation triggers immediately
+    form.submit();
+    console.log('Form submitted');
     
     return true;
   } catch (error) {
