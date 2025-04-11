@@ -12,6 +12,8 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     // Format amount as expected by Fiserv (in cents without decimal)
     const formattedAmount = Math.round(paymentData.amount * 100).toString();
     
+    console.log('Starting checkout process with data:', paymentData);
+    
     // Create form data to post to Fiserv
     const formData = new FormData();
     formData.append('txntype', 'sale');
@@ -24,8 +26,13 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     formData.append('chargetotal', formattedAmount);
     formData.append('currency', paymentData.currency);
     formData.append('oid', paymentData.orderId);
-    formData.append('responseSuccessURL', `${window.location.origin}?status=success`);
-    formData.append('responseFailURL', `${window.location.origin}?status=failed`);
+    
+    // Ensure these URLs are properly formatted with the full origin
+    const successUrl = `${window.location.origin}?status=success`;
+    const failUrl = `${window.location.origin}?status=failed`;
+    
+    formData.append('responseSuccessURL', successUrl);
+    formData.append('responseFailURL', failUrl);
     formData.append('email', paymentData.customerEmail);
     formData.append('bname', paymentData.customerName);
     
@@ -36,7 +43,9 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
       amount: formattedAmount,
       orderId: paymentData.orderId,
       customerEmail: paymentData.customerEmail,
-      url: url
+      url: url,
+      successUrl: successUrl,
+      failUrl: failUrl
     });
     
     // Create a form element to submit the data
@@ -57,12 +66,20 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     // Add form to the document and submit it
     document.body.appendChild(form);
     console.log('Submitting form to Fiserv');
-    form.submit();
+    
+    // Force the form to be submitted synchronously to avoid any timing issues
+    setTimeout(() => {
+      form.submit();
+      console.log('Form submitted');
+    }, 100);
     
     // Clean up - remove the form after submission
     setTimeout(() => {
-      document.body.removeChild(form);
-    }, 100);
+      if (document.body.contains(form)) {
+        document.body.removeChild(form);
+        console.log('Form removed from document');
+      }
+    }, 1000);
     
     return true;
   } catch (error) {
