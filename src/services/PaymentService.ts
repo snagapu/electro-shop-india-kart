@@ -50,9 +50,16 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     
     // Transaction details
     const timezone = 'Asia/Dubai';
+    
+    // Format date as YYYY:MM:DD-HH:mm:ss manually instead of using moment-timezone
     const now = new Date();
-    // Format date as YYYY:MM:DD-HH:mm:ss using moment.js
-    const txnDateTime = window.moment().tz(timezone).format('YYYY:MM:DD-HH:mm:ss');
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const txnDateTime = `${year}:${month}:${day}-${hours}:${minutes}:${seconds}`;
     
     addField('timezone', timezone);
     addField('txndatetime', txnDateTime);
