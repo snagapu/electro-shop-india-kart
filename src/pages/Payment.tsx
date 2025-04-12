@@ -114,27 +114,25 @@ const Payment: React.FC = () => {
       const orderTotal = totalPrice + taxes + shippingCost;
       
       console.log("Initiating hosted checkout with:", {
-        amount: orderTotal,
+        amount: orderTotal / 100,
         orderId: orderId,
         email: parsedUserDetails.email,
         name: parsedUserDetails.name
       });
       
       try {
-        initiateHostedCheckout({
-          amount: orderTotal,
+        const success = initiateHostedCheckout({
+          amount: orderTotal / 100,
           currency: 'INR',
           orderId: orderId,
           customerEmail: parsedUserDetails.email,
           customerName: parsedUserDetails.name
         });
         
-        setTimeout(() => {
-          if (document.body) {
-            setIsProcessing(false);
-            toast.error("Payment gateway did not load. Please try again.");
-          }
-        }, 5000);
+        if (!success) {
+          setIsProcessing(false);
+          toast.error("Failed to initiate payment. Please try again.");
+        }
       } catch (error) {
         console.error("Error in payment submission:", error);
         setIsProcessing(false);
