@@ -121,18 +121,22 @@ const Payment: React.FC = () => {
       });
       
       try {
-        const success = initiateHostedCheckout({
-          amount: orderTotal / 100,
-          currency: 'INR',
-          orderId: orderId,
-          customerEmail: parsedUserDetails.email,
-          customerName: parsedUserDetails.name
-        });
+        toast.info("Redirecting to payment gateway...");
         
-        if (!success) {
-          setIsProcessing(false);
-          toast.error("Failed to initiate payment. Please try again.");
-        }
+        setTimeout(async () => {
+          const success = await initiateHostedCheckout({
+            amount: orderTotal / 100,
+            currency: 'AED',
+            orderId: orderId,
+            customerEmail: parsedUserDetails.email,
+            customerName: parsedUserDetails.name
+          });
+          
+          if (!success) {
+            setIsProcessing(false);
+            toast.error("Failed to initiate payment. Please try again.");
+          }
+        }, 500);
       } catch (error) {
         console.error("Error in payment submission:", error);
         setIsProcessing(false);

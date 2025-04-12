@@ -9,10 +9,20 @@ interface PaymentData {
 
 export const initiateHostedCheckout = async (paymentData: PaymentData) => {
   try {
-    // Format amount as expected by Fiserv (in cents without decimal)
-    const formattedAmount = paymentData.amount.toFixed(2);
-    
     console.log('Starting checkout process with data:', paymentData);
+    
+    // Load required libraries dynamically
+    await loadScripts([
+      "https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js",
+      "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data-10-year-range.min.js"
+    ]);
+    
+    // Ensure libraries are loaded
+    if (!window.CryptoJS || !window.moment) {
+      console.error("Required libraries not loaded");
+      return false;
+    }
     
     // Create the form element
     const form = document.createElement('form');
@@ -41,21 +51,19 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     // Transaction details
     const timezone = 'Asia/Dubai';
     const now = new Date();
-    // Format date as YYYY:MM:DD-HH:mm:ss
-    const txnDateTime = now.getFullYear() + ':' +
-                         String(now.getMonth() + 1).padStart(2, '0') + ':' +
-                         String(now.getDate()).padStart(2, '0') + '-' +
-                         String(now.getHours()).padStart(2, '0') + ':' +
-                         String(now.getMinutes()).padStart(2, '0') + ':' +
-                         String(now.getSeconds()).padStart(2, '0');
+    // Format date as YYYY:MM:DD-HH:mm:ss using moment.js
+    const txnDateTime = window.moment().tz(timezone).format('YYYY:MM:DD-HH:mm:ss');
     
     addField('timezone', timezone);
     addField('txndatetime', txnDateTime);
     addField('txntype', 'sale');
+    
+    // Format amount with 2 decimal places
+    const formattedAmount = paymentData.amount.toFixed(2);
     addField('chargetotal', formattedAmount);
     
-    // Set currency code - 356 for INR (Indian Rupee)
-    addField('currency', '356'); // INR currency code
+    // Set currency code
+    addField('currency', '784'); // AED currency code
     
     // Additional settings
     addField('full_bypass', 'false');
@@ -82,54 +90,39 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('oid', paymentData.orderId);
     
     // Calculate hash
-    // Note: In a production environment, you would calculate this hash on the server side
-    // This is a simplified version for demo purposes - in production, use a server endpoint
-    const sharedSecret = 'sharedsecret'; // This should be kept secure - ideally on server side
+    const sharedSecret = 'sharedsecret'; // This should be kept secure, using the default from the example
     
     // Create an array of all parameters to include in hash
-    const messageParameters: Record<string, string> = {
-      txndatetime: txnDateTime,
-      timezone: timezone,
-      storename: '80004160',
-      chargetotal: formattedAmount,
-      currency: '356',
-      txntype: 'sale',
-      full_bypass: 'false',
-      dccSkipOffer: 'false',
-      authenticateTransaction: 'false',
-      responseSuccessURL: successUrl,
-      responseFailURL: failUrl,
-      oid: paymentData.orderId
-    };
+    const messageParameters: Record<string, string> = {};
     
-    if (paymentData.customerEmail) {
-      messageParameters.email = paymentData.customerEmail;
-    }
-    
-    if (paymentData.customerName) {
-      messageParameters.bname = paymentData.customerName;
-    }
+    // Get all form inputs
+    Array.from(form.elements).forEach((element: any) => {
+      if (element.name && element.name !== 'hashExtended' && element.value) {
+        messageParameters[element.name] = element.value;
+      }
+    });
     
     // Sort keys alphabetically
     const sortedKeys = Object.keys(messageParameters).sort();
     const messageSignatureContent = sortedKeys.map(key => messageParameters[key]).join('|');
     
-    // For demo purposes, using a placeholder hash
-    // In production, this should be properly calculated on server-side
-    addField('hashExtended', 'demoHashValue'); // In production, calculate this on the server
+    console.log('Message content for hash:', messageSignatureContent);
     
-    console.log('Preparing form with parameters:', messageParameters);
-    console.log('Redirect URLs - Success:', successUrl, 'Fail:', failUrl);
+    // Calculate HMAC
+    const messageSignature = window.CryptoJS.HmacSHA256(messageSignatureContent, sharedSecret);
+    const messageSignatureBase64 = window.CryptoJS.enc.Base64.stringify(messageSignature);
+    
+    // Add the hash
+    addField('hashExtended', messageSignatureBase64);
+    
+    console.log('Form prepared with hash:', messageSignatureBase64);
     
     // Add form to document body
     document.body.appendChild(form);
     
-    // Logging
-    console.log('Form ready for submission');
-    
     // Submit the form
+    console.log('Submitting form to Fiserv gateway');
     form.submit();
-    console.log('Form submitted to Fiserv gateway');
     
     return true;
   } catch (error) {
@@ -137,3 +130,40 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     return false;
   }
 };
+
+// Helper function to load external scripts
+const loadScripts = (urls: string[]): Promise<boolean> => {
+  const promises = urls.map(url => {
+    return new Promise<boolean>((resolve, reject) => {
+      // Check if script is already loaded
+      if (document.querySelector(`script[src="${url}"]`)) {
+        resolve(true);
+        return;
+      }
+      
+      const script = document.createElement('script');
+      script.src = url;
+      script.async = true;
+      
+      script.onload = () => resolve(true);
+      script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+      
+      document.head.appendChild(script);
+    });
+  });
+  
+  return Promise.all(promises)
+    .then(() => true)
+    .catch(error => {
+      console.error('Error loading scripts:', error);
+      return false;
+    });
+};
+
+// Add TypeScript declarations for loaded libraries
+declare global {
+  interface Window {
+    CryptoJS: any;
+    moment: any;
+  }
+}
