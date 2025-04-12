@@ -29,6 +29,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     form.id = 'paymentForm';
     form.method = 'POST';
     form.action = 'https://test.ipg-online.com/connect/gateway/processing';
+    form.target = '_self'; // Add this to ensure it loads in the same window
     
     // Create and append hidden fields
     const addField = (name: string, value: string) => {
@@ -37,6 +38,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
       input.name = name;
       input.value = value;
       form.appendChild(input);
+      console.log(`Added field: ${name}=${value}`);
       return input;
     };
     
@@ -124,11 +126,20 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     
     console.log('Form prepared with hash:', messageSignatureBase64);
     
+    // Remove any existing payment forms
+    const existingForm = document.getElementById('paymentForm');
+    if (existingForm) {
+      existingForm.remove();
+    }
+    
     // Add form to document body
     document.body.appendChild(form);
     
+    // Short delay to ensure the form is in the DOM
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     // Submit the form
-    console.log('Submitting form to Fiserv gateway');
+    console.log('Submitting form to Fiserv gateway:', form);
     form.submit();
     
     return true;
