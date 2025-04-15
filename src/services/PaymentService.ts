@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface PaymentData {
@@ -72,7 +71,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('chargetotal', formattedAmount);
     
     // Set currency code
-    addField('currency', '784'); // AED currency code
+    addField('currency', '356'); // INR currency code
     
     // Additional settings
     addField('full_bypass', 'false');
@@ -184,4 +183,3 @@ declare global {
     CryptoJS: any;
   }
 }
-
