@@ -1,4 +1,6 @@
 
+import React from 'react';
+
 interface PaymentData {
   amount: number;
   currency: string;
@@ -13,13 +15,11 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     
     // Load required libraries dynamically
     await loadScripts([
-      "https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js",
-      "https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.33/moment-timezone-with-data-10-year-range.min.js"
+      "https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"
     ]);
     
     // Ensure libraries are loaded
-    if (!window.CryptoJS || !window.moment) {
+    if (!window.CryptoJS) {
       console.error("Required libraries not loaded");
       return false;
     }
@@ -29,7 +29,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     form.id = 'paymentForm';
     form.method = 'POST';
     form.action = 'https://test.ipg-online.com/connect/gateway/processing';
-    form.target = '_self'; // Add this to ensure it loads in the same window
+    form.target = '_self';
     
     // Create and append hidden fields
     const addField = (name: string, value: string) => {
@@ -42,18 +42,18 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
       return input;
     };
     
-    // Add the required fields as specified in the example
+    // Add the required fields as specified
     addField('hash_algorithm', 'HMACSHA256');
     addField('checkoutoption', 'combinedpage');
     addField('language', 'en_US');
     
-    // Store details
-    addField('storename', '80004160'); // Use the store ID from the provided form
+    // Updated store ID
+    addField('storename', '3300000901');
     
     // Transaction details
     const timezone = 'Asia/Dubai';
     
-    // Format date as YYYY:MM:DD-HH:mm:ss manually instead of using moment-timezone
+    // Format date manually
     const now = new Date();
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, '0');
@@ -98,8 +98,8 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     // Order ID
     addField('oid', paymentData.orderId);
     
-    // Calculate hash
-    const sharedSecret = 'sharedsecret'; // This should be kept secure, using the default from the example
+    // Updated shared secret
+    const sharedSecret = 'fb9ms8PezB';
     
     // Create an array of all parameters to include in hash
     const messageParameters: Record<string, string> = {};
@@ -182,6 +182,6 @@ const loadScripts = (urls: string[]): Promise<boolean> => {
 declare global {
   interface Window {
     CryptoJS: any;
-    moment: any;
   }
 }
+
