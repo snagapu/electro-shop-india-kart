@@ -66,8 +66,8 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('txndatetime', txnDateTime);
     addField('txntype', 'sale');
     
-    // Format amount with 2 decimal places
-    const formattedAmount = paymentData.amount.toFixed(2);
+    // Format amount with ALWAYS 2 decimal places
+    const formattedAmount = Number(paymentData.amount).toFixed(2);
     addField('chargetotal', formattedAmount);
     
     // Set currency code
