@@ -33,6 +33,26 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({
     }).format(amount);
   };
 
+  const getPaymentButtonText = () => {
+    if (isProcessing) {
+      return "Processing Payment...";
+    }
+    
+    if (paymentMode === "full") {
+      return "Pay & Complete Order";
+    }
+    
+    if (useHybridPayment && selectedEMIOption) {
+      return `Pay ${formatAmount(upfrontAmount)} Now`;
+    }
+    
+    if (selectedEMIOption) {
+      return `Pay First EMI of ${formatAmount(selectedEMIOption.monthlyAmount)}`;
+    }
+    
+    return "Pay & Complete Order";
+  };
+
   return useHostedCheckout ? (
     <div className="pt-4">
       <Button 
@@ -40,7 +60,7 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({
         className="w-full py-6 text-lg bg-brand-teal hover:bg-brand-teal/90"
         disabled={isProcessing || (paymentMode === "emi" && !selectedEMIOption)}
       >
-        {isProcessing ? "Processing Payment..." : `Pay & Complete Order`}
+        {getPaymentButtonText()}
       </Button>
       <p className="text-xs text-center mt-2 text-gray-500">
         {paymentMode === "emi" && selectedEMIOption && (

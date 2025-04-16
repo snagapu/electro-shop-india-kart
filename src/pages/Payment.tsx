@@ -64,9 +64,10 @@ const Payment: React.FC = () => {
       return orderTotal / 100;
     } else if (useHybridPayment && selectedEMIOption) {
       return upfrontAmount;
-    } else {
-      return selectedEMIOption?.monthlyAmount || 0;
+    } else if (selectedEMIOption) {
+      return selectedEMIOption.monthlyAmount;
     }
+    return 0;
   };
 
   const handleSelectTenure = (tenure: number) => {
@@ -103,6 +104,7 @@ const Payment: React.FC = () => {
     
     try {
       toast.info("Redirecting to payment gateway...");
+      console.log("Payment amount being sent:", paymentAmount);
       
       setTimeout(async () => {
         const success = await initiateHostedCheckout({
@@ -112,8 +114,9 @@ const Payment: React.FC = () => {
           customerEmail: parsedUserDetails.email,
           customerName: parsedUserDetails.name,
           isEmi: paymentMode === "emi",
-          emiTenure: selectedTenure,
-          isHybridPayment: useHybridPayment
+          emiTenure: selectedTenure || 0,
+          isHybridPayment: useHybridPayment && paymentMode === "emi",
+          totalAmount: orderTotal / 100
         });
         
         if (!success) {

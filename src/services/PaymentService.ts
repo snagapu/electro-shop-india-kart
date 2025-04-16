@@ -71,15 +71,9 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('txndatetime', txnDateTime);
     addField('txntype', 'sale');
     
-    // Format amount with ALWAYS 2 decimal places
-    // For EMI payments, we need to use the proper amount based on the payment mode
-    let amountToCharge = paymentData.amount;
-    
-    // Make sure the amount is multiplied by 100 to get paisa
-    amountToCharge = amountToCharge * 100;
-    
-    // Format as decimal with 2 places
-    const formattedAmount = (amountToCharge / 100).toFixed(2);
+    // Format amount correctly - Fiserv expects the amount in decimal format with 2 decimal places
+    // Don't multiply by 100 since we're already getting the proper amount from the calling function
+    const formattedAmount = Number(paymentData.amount).toFixed(2);
     addField('chargetotal', formattedAmount);
     
     // Set currency code
@@ -92,8 +86,11 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
       addField('emiTenure', paymentData.emiTenure.toString());
       
       // If it's a hybrid payment, we add the specific EMI fields
-      if (paymentData.isHybridPayment) {
+      if (paymentData.isHybridPayment && paymentData.amount > 0) {
         addField('hybridPayment', 'Y');
+        
+        // For hybrid payment, firstPaymentAmount should be the upfront amount 
+        // which is already properly formatted in amount
         addField('firstPaymentAmount', formattedAmount);
       }
     }
