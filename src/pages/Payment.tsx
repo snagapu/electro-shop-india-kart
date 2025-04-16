@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
@@ -51,7 +50,6 @@ const Payment: React.FC = () => {
       setSelectedTenure(options[0].tenure);
     }
     
-    // Set default upfront amount to 10% of total
     const defaultUpfront = Math.round((orderTotal / 100) * 0.1);
     setUpfrontAmount(defaultUpfront);
   }, [totalPrice]);
@@ -94,7 +92,6 @@ const Payment: React.FC = () => {
     sessionStorage.setItem("orderId", orderId);
     sessionStorage.setItem("orderDate", new Date().toISOString());
     
-    // Store EMI selection details if applicable
     if (paymentMode === "emi") {
       const emiDetails = {
         isEmi: true,
@@ -109,13 +106,6 @@ const Payment: React.FC = () => {
     
     const paymentAmount = getPaymentAmount();
     
-    console.log("Initiating hosted checkout with:", {
-      amount: paymentAmount,
-      orderId: orderId,
-      email: parsedUserDetails.email,
-      name: parsedUserDetails.name
-    });
-    
     try {
       toast.info("Redirecting to payment gateway...");
       
@@ -125,7 +115,10 @@ const Payment: React.FC = () => {
           currency: 'INR',
           orderId: orderId,
           customerEmail: parsedUserDetails.email,
-          customerName: parsedUserDetails.name
+          customerName: parsedUserDetails.name,
+          isEmi: paymentMode === "emi",
+          emiTenure: selectedTenure,
+          isHybridPayment: useHybridPayment
         });
         
         if (!success) {
@@ -146,7 +139,6 @@ const Payment: React.FC = () => {
     setIsProcessing(true);
     console.log("Manual payment submission started with values:", values);
     
-    // Store EMI selection details if applicable
     if (paymentMode === "emi") {
       const emiDetails = {
         isEmi: true,
