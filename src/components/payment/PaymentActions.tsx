@@ -2,7 +2,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { EMIOption } from "@/utils/emiUtils";
-import HostedCheckout from "./HostedCheckout";
 import ManualPayment, { ManualPaymentFormValues } from "./ManualPayment";
 
 interface PaymentActionsProps {
@@ -26,6 +25,14 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({
   onHostedCheckoutSubmit,
   onManualPaymentSubmit,
 }) => {
+  const formatAmount = (amount: number): string => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
   return useHostedCheckout ? (
     <div className="pt-4">
       <Button 
@@ -39,9 +46,9 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({
         {paymentMode === "emi" && selectedEMIOption && (
           <>
             {useHybridPayment ? (
-              <>You'll pay ₹{upfrontAmount} now and ₹{selectedEMIOption.monthlyAmount} for {selectedEMIOption.tenure} months.</>
+              <>You'll pay {formatAmount(upfrontAmount)} now and {formatAmount(selectedEMIOption.monthlyAmount)} for {selectedEMIOption.tenure} months.</>
             ) : (
-              <>You'll pay ₹{selectedEMIOption.monthlyAmount} per month for {selectedEMIOption.tenure} months.</>
+              <>You'll pay {formatAmount(selectedEMIOption.monthlyAmount)} per month for {selectedEMIOption.tenure} months.</>
             )}
           </>
         )}

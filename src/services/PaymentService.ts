@@ -10,6 +10,7 @@ interface PaymentData {
   isEmi?: boolean;
   emiTenure?: number;
   isHybridPayment?: boolean;
+  totalAmount?: number; // Added totalAmount for reference
 }
 
 export const initiateHostedCheckout = async (paymentData: PaymentData) => {
@@ -71,7 +72,14 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('txntype', 'sale');
     
     // Format amount with ALWAYS 2 decimal places
-    const formattedAmount = Number(paymentData.amount).toFixed(2);
+    // For EMI payments, we need to use the proper amount based on the payment mode
+    let amountToCharge = paymentData.amount;
+    
+    // Make sure the amount is multiplied by 100 to get paisa
+    amountToCharge = amountToCharge * 100;
+    
+    // Format as decimal with 2 places
+    const formattedAmount = (amountToCharge / 100).toFixed(2);
     addField('chargetotal', formattedAmount);
     
     // Set currency code
@@ -82,6 +90,12 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
       addField('emiFlag', 'Y');
       addField('emiScheme', 'DEFAULT');
       addField('emiTenure', paymentData.emiTenure.toString());
+      
+      // If it's a hybrid payment, we add the specific EMI fields
+      if (paymentData.isHybridPayment) {
+        addField('hybridPayment', 'Y');
+        addField('firstPaymentAmount', formattedAmount);
+      }
     }
     
     // Additional settings
