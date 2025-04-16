@@ -55,7 +55,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('storename', '3300000901');
     
     // Transaction details
-    const timezone = 'Asia/Dubai';
+    const timezone = 'Asia/Kolkata';
     
     // Format date manually
     const now = new Date();
