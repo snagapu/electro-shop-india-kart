@@ -1,20 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
-import { Lock, CreditCard, BadgePercent } from "lucide-react";
+import { Lock } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { initiateHostedCheckout } from "@/services/PaymentService";
 import PaymentPageLayout from "@/components/payment/PaymentPageLayout";
 import PaymentOptions from "@/components/payment/PaymentOptions";
-import HostedCheckout from "@/components/payment/HostedCheckout";
-import ManualPayment, { ManualPaymentFormValues } from "@/components/payment/ManualPayment";
+import PaymentModeTabs from "@/components/payment/PaymentModeTabs";
+import PaymentActions from "@/components/payment/PaymentActions";
+import { ManualPaymentFormValues } from "@/components/payment/ManualPayment";
 import { generateOrderId, calculateOrderTotals } from "@/utils/paymentUtils";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import EMIOptions from "@/components/payment/EMIOptions";
-import HybridPayment from "@/components/payment/HybridPayment";
 import { getEMIOptions, EMIOption } from "@/utils/emiUtils";
 
 const Payment: React.FC = () => {
@@ -172,82 +167,33 @@ const Payment: React.FC = () => {
         <h2 className="text-xl font-semibold">Secure Payment</h2>
       </div>
       
-      <Tabs defaultValue="full" value={paymentMode} onValueChange={(value) => setPaymentMode(value as "full" | "emi")} className="mb-6">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="full" className="text-base">
-            <CreditCard className="h-4 w-4 mr-2" />
-            Full Payment
-          </TabsTrigger>
-          <TabsTrigger value="emi" className="text-base">
-            <BadgePercent className="h-4 w-4 mr-2" />
-            EMI Options
-          </TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="full">
-          <p className="text-sm text-gray-600 mb-4">
-            Pay the full amount at once using your preferred payment method.
-          </p>
-        </TabsContent>
-        
-        <TabsContent value="emi" className="space-y-6">
-          <EMIOptions 
-            options={emiOptions} 
-            selectedTenure={selectedTenure} 
-            onSelectTenure={handleSelectTenure} 
-          />
-          
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="hybrid-payment"
-              checked={useHybridPayment}
-              onCheckedChange={setUseHybridPayment}
-            />
-            <Label htmlFor="hybrid-payment">Pay a portion upfront & rest as EMI</Label>
-          </div>
-          
-          {useHybridPayment && selectedEMIOption && (
-            <HybridPayment
-              totalAmount={selectedEMIOption.totalAmount}
-              upfrontAmount={upfrontAmount}
-              onUpfrontAmountChange={handleUpfrontAmountChange}
-            />
-          )}
-        </TabsContent>
-      </Tabs>
+      <PaymentModeTabs 
+        paymentMode={paymentMode}
+        onPaymentModeChange={setPaymentMode}
+        emiOptions={emiOptions}
+        selectedTenure={selectedTenure}
+        onSelectTenure={handleSelectTenure}
+        useHybridPayment={useHybridPayment}
+        onHybridPaymentChange={setUseHybridPayment}
+        upfrontAmount={upfrontAmount}
+        onUpfrontAmountChange={handleUpfrontAmountChange}
+      />
       
       <PaymentOptions 
         useHostedCheckout={useHostedCheckout} 
         setUseHostedCheckout={setUseHostedCheckout} 
       />
       
-      {useHostedCheckout ? (
-        <div className="pt-4">
-          <Button 
-            onClick={handleHostedCheckoutSubmit}
-            className="w-full py-6 text-lg bg-brand-teal hover:bg-brand-teal/90"
-            disabled={isProcessing || (paymentMode === "emi" && !selectedTenure)}
-          >
-            {isProcessing ? "Processing Payment..." : `Pay & Complete Order`}
-          </Button>
-          <p className="text-xs text-center mt-2 text-gray-500">
-            {paymentMode === "emi" && selectedEMIOption && (
-              <>
-                {useHybridPayment ? (
-                  <>You'll pay ₹{upfrontAmount} now and ₹{selectedEMIOption.monthlyAmount} for {selectedEMIOption.tenure} months.</>
-                ) : (
-                  <>You'll pay ₹{selectedEMIOption.monthlyAmount} per month for {selectedEMIOption.tenure} months.</>
-                )}
-              </>
-            )}
-          </p>
-        </div>
-      ) : (
-        <ManualPayment 
-          isProcessing={isProcessing} 
-          onSubmit={handleManualPaymentSubmit} 
-        />
-      )}
+      <PaymentActions 
+        useHostedCheckout={useHostedCheckout}
+        isProcessing={isProcessing}
+        paymentMode={paymentMode}
+        selectedEMIOption={emiOptions.find(option => option.tenure === selectedTenure)}
+        useHybridPayment={useHybridPayment}
+        upfrontAmount={upfrontAmount}
+        onHostedCheckoutSubmit={handleHostedCheckoutSubmit}
+        onManualPaymentSubmit={handleManualPaymentSubmit}
+      />
     </PaymentPageLayout>
   );
 };
