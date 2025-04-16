@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 interface PaymentData {
@@ -6,6 +7,9 @@ interface PaymentData {
   orderId: string;
   customerEmail: string;
   customerName: string;
+  isEmi?: boolean;
+  emiTenure?: number;
+  isHybridPayment?: boolean;
 }
 
 export const initiateHostedCheckout = async (paymentData: PaymentData) => {
@@ -72,6 +76,13 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     
     // Set currency code
     addField('currency', '356'); // INR currency code
+    
+    // Add EMI related fields if applicable
+    if (paymentData.isEmi && paymentData.emiTenure) {
+      addField('emiFlag', 'Y');
+      addField('emiScheme', 'DEFAULT');
+      addField('emiTenure', paymentData.emiTenure.toString());
+    }
     
     // Additional settings
     addField('full_bypass', 'false');
