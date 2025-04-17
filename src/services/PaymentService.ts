@@ -1,6 +1,13 @@
 
 import React from 'react';
 
+// Add TypeScript declaration for the CryptoJS library
+declare global {
+  interface Window {
+    CryptoJS: any;
+  }
+}
+
 interface PaymentData {
   amount: number;
   currency: string;
@@ -127,7 +134,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     
     // Calculate HMAC
     const messageSignature = window.CryptoJS.HmacSHA256(messageSignatureContent, sharedSecret);
-    const messageSignatureBase64 = window.CryptoJS.enc.stringify(messageSignature);
+    const messageSignatureBase64 = window.CryptoJS.enc.Base64.stringify(messageSignature);
     
     // Add the hash
     addField('hashExtended', messageSignatureBase64);
