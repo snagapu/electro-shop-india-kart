@@ -109,7 +109,7 @@ const Payment: React.FC = () => {
           isEmi: paymentMode === "emi",
           emiTenure: selectedTenure || 0,
           isHybridPayment: useHybridPayment && paymentMode === "emi",
-          totalAmount: orderTotal / 100
+          upfrontAmount: useHybridPayment ? upfrontAmount : 0
         });
         
         if (!success) {

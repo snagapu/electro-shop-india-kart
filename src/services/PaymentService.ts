@@ -10,7 +10,7 @@ interface PaymentData {
   isEmi?: boolean;
   emiTenure?: number;
   isHybridPayment?: boolean;
-  totalAmount?: number; // Added totalAmount for reference
+  upfrontAmount?: number; // For EMI details only, not used in charge total
 }
 
 export const initiateHostedCheckout = async (paymentData: PaymentData) => {
@@ -71,27 +71,27 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('txndatetime', txnDateTime);
     addField('txntype', 'sale');
     
-    // Format amount correctly - Always use the full amount (totalAmount) as chargetotal
-    // This is important for hash calculation - we always charge the full product amount regardless of EMI
+    // Format amount correctly - Always use the full product amount from OrderSummary
+    // regardless of payment mode (full payment or EMI)
     const formattedAmount = Number(paymentData.amount).toFixed(2);
     addField('chargetotal', formattedAmount);
     
     // Set currency code
     addField('currency', '356'); // INR currency code
     
-    // Add EMI related fields if applicable, but don't change the chargetotal
+    // Add EMI related fields if applicable, but always use the full product amount for chargetotal
     if (paymentData.isEmi && paymentData.emiTenure) {
       addField('emiFlag', 'Y');
       addField('emiScheme', 'DEFAULT');
       addField('emiTenure', paymentData.emiTenure.toString());
       
-      // If it's a hybrid payment, we add the specific EMI fields
-      if (paymentData.isHybridPayment && paymentData.amount > 0) {
+      // If it's a hybrid payment with upfront amount, add the specific EMI fields
+      if (paymentData.isHybridPayment && paymentData.upfrontAmount) {
         addField('hybridPayment', 'Y');
         
         // For hybrid payment, firstPaymentAmount is the upfront amount
-        // But we don't calculate this into chargetotal - chargetotal is always the full product amount
-        const upfrontAmount = Number(paymentData.amount).toFixed(2);
+        // But chargetotal is always the full product amount
+        const upfrontAmount = Number(paymentData.upfrontAmount).toFixed(2);
         addField('firstPaymentAmount', upfrontAmount);
       }
     }
