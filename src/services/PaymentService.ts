@@ -72,29 +72,14 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('txntype', 'sale');
     
     // Format amount correctly - Always use the full product amount from OrderSummary
-    // regardless of payment mode (full payment or EMI)
     const formattedAmount = Number(paymentData.amount).toFixed(2);
     addField('chargetotal', formattedAmount);
     
     // Set currency code
     addField('currency', '356'); // INR currency code
     
-    // Add EMI related fields if applicable, but always use the full product amount for chargetotal
-    if (paymentData.isEmi && paymentData.emiTenure) {
-      addField('emiFlag', 'Y');
-      addField('emiScheme', 'DEFAULT');
-      addField('emiTenure', paymentData.emiTenure.toString());
-      
-      // If it's a hybrid payment with upfront amount, add the specific EMI fields
-      if (paymentData.isHybridPayment && paymentData.upfrontAmount) {
-        addField('hybridPayment', 'Y');
-        
-        // For hybrid payment, firstPaymentAmount is the upfront amount
-        // But chargetotal is always the full product amount
-        const upfrontAmount = Number(paymentData.upfrontAmount).toFixed(2);
-        addField('firstPaymentAmount', upfrontAmount);
-      }
-    }
+    // REMOVED EMI PARAMETERS - This was causing hash calculation errors
+    // No longer adding emiFlag, emiScheme, emiTenure, or hybridPayment parameters
     
     // Additional settings
     addField('full_bypass', 'false');
@@ -142,7 +127,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     
     // Calculate HMAC
     const messageSignature = window.CryptoJS.HmacSHA256(messageSignatureContent, sharedSecret);
-    const messageSignatureBase64 = window.CryptoJS.enc.Base64.stringify(messageSignature);
+    const messageSignatureBase64 = window.CryptoJS.enc.stringify(messageSignature);
     
     // Add the hash
     addField('hashExtended', messageSignatureBase64);
@@ -162,7 +147,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     await new Promise(resolve => setTimeout(resolve, 100));
     
     // Submit the form
-    console.log('Submitting form to Fiserv gateway:', form);
+    console.log('Submitting form to payment gateway:', form);
     form.submit();
     
     return true;
@@ -201,10 +186,3 @@ const loadScripts = (urls: string[]): Promise<boolean> => {
       return false;
     });
 };
-
-// Add TypeScript declarations for loaded libraries
-declare global {
-  interface Window {
-    CryptoJS: any;
-  }
-}

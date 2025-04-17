@@ -75,8 +75,8 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({
       </p>
       {paymentMode === "emi" && (
         <p className="text-xs text-center mt-1 text-gray-600">
-          <strong>Note:</strong> Full product amount will be authorized by the payment gateway, 
-          but your bank will convert it to EMI as per selected plan.
+          <strong>Note:</strong> Full product amount will be processed by the payment gateway.
+          EMI conversion will be handled by your bank.
         </p>
       )}
     </div>
