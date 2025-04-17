@@ -23,6 +23,8 @@ const Payment: React.FC = () => {
   const [useHybridPayment, setUseHybridPayment] = useState(false);
   const [upfrontAmount, setUpfrontAmount] = useState(0);
   const [emiOptions, setEmiOptions] = useState<EMIOption[]>([]);
+  
+  const { orderTotal } = calculateOrderTotals(totalPrice);
 
   useEffect(() => {
     if (!sessionStorage.getItem("userDetails") || items.length === 0) {
@@ -38,14 +40,13 @@ const Payment: React.FC = () => {
   }, [location, items, navigate]);
 
   useEffect(() => {
-    const { orderTotal } = calculateOrderTotals(totalPrice);
-    const options = getEMIOptions(orderTotal / 100);
+    const options = getEMIOptions(totalPrice / 100);
     setEmiOptions(options);
     if (options.length > 0 && !selectedTenure) {
       setSelectedTenure(options[0].tenure);
     }
     
-    const defaultUpfront = Math.round((orderTotal / 100) * 0.1);
+    const defaultUpfront = Math.round((totalPrice / 100) * 0.1);
     setUpfrontAmount(defaultUpfront);
   }, [totalPrice]);
 
@@ -55,13 +56,7 @@ const Payment: React.FC = () => {
   }
 
   const parsedUserDetails = JSON.parse(userDetails);
-  const { orderTotal } = calculateOrderTotals(totalPrice);
-  
   const selectedEMIOption = emiOptions.find(option => option.tenure === selectedTenure);
-  
-  const getPaymentAmount = () => {
-    return orderTotal / 100;
-  };
 
   const handleSelectTenure = (tenure: number) => {
     setSelectedTenure(tenure);
@@ -93,7 +88,7 @@ const Payment: React.FC = () => {
       sessionStorage.setItem("emiDetails", JSON.stringify(emiDetails));
     }
     
-    const paymentAmount = getPaymentAmount();
+    const paymentAmount = orderTotal / 100;
     
     try {
       toast.info("Redirecting to payment gateway...");
@@ -184,7 +179,7 @@ const Payment: React.FC = () => {
         useHostedCheckout={useHostedCheckout}
         isProcessing={isProcessing}
         paymentMode={paymentMode}
-        selectedEMIOption={emiOptions.find(option => option.tenure === selectedTenure)}
+        selectedEMIOption={selectedEMIOption}
         useHybridPayment={useHybridPayment}
         upfrontAmount={upfrontAmount}
         onHostedCheckoutSubmit={handleHostedCheckoutSubmit}

@@ -33,7 +33,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     form.id = 'paymentForm';
     form.method = 'POST';
     form.action = 'https://test.ipg-online.com/connect/gateway/processing';
-    form.target = '_self';
+    form.target = '_blank'; // Open in new tab to avoid CORS issues
     
     // Create and append hidden fields
     const addField = (name: string, value: string) => {
@@ -101,9 +101,10 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('dccSkipOffer', 'false');
     addField('authenticateTransaction', 'false');
     
-    // Set response URLs
-    const successUrl = `${window.location.origin}?status=success`;
-    const failUrl = `${window.location.origin}?status=failed`;
+    // Set response URLs - using absolute URLs to avoid CORS issues
+    const origin = window.location.origin;
+    const successUrl = `${origin}/order-complete?status=success&orderId=${paymentData.orderId}`;
+    const failUrl = `${origin}/payment?status=failed`;
     
     addField('responseSuccessURL', successUrl);
     addField('responseFailURL', failUrl);
@@ -184,6 +185,7 @@ const loadScripts = (urls: string[]): Promise<boolean> => {
       const script = document.createElement('script');
       script.src = url;
       script.async = true;
+      script.crossOrigin = "anonymous"; // Add crossorigin attribute
       
       script.onload = () => resolve(true);
       script.onerror = () => reject(new Error(`Failed to load script: ${url}`));

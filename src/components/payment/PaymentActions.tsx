@@ -43,12 +43,10 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({
     }
     
     if (useHybridPayment && selectedEMIOption) {
-      // Show upfront amount but the actual charge will be the full product amount
       return `Pay ${formatAmount(upfrontAmount)} Now (Upfront) + EMI`;
     }
     
     if (selectedEMIOption) {
-      // Show monthly EMI but the actual charge will be the full product amount
       return `Pay via EMI: ${formatAmount(selectedEMIOption.monthlyAmount)}/month`;
     }
     
@@ -76,8 +74,9 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({
         )}
       </p>
       {paymentMode === "emi" && (
-        <p className="text-xs text-center mt-1 text-gray-500">
-          (Full product amount will be authorized by the payment gateway)
+        <p className="text-xs text-center mt-1 text-gray-600">
+          <strong>Note:</strong> Full product amount will be authorized by the payment gateway, 
+          but your bank will convert it to EMI as per selected plan.
         </p>
       )}
     </div>
