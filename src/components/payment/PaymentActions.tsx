@@ -43,11 +43,13 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({
     }
     
     if (useHybridPayment && selectedEMIOption) {
-      return `Pay ${formatAmount(upfrontAmount)} Now`;
+      // Show upfront amount but the actual charge will be the full product amount
+      return `Pay ${formatAmount(upfrontAmount)} Now (Upfront) + EMI`;
     }
     
     if (selectedEMIOption) {
-      return `Pay First EMI of ${formatAmount(selectedEMIOption.monthlyAmount)}`;
+      // Show monthly EMI but the actual charge will be the full product amount
+      return `Pay via EMI: ${formatAmount(selectedEMIOption.monthlyAmount)}/month`;
     }
     
     return "Pay & Complete Order";
@@ -73,6 +75,11 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({
           </>
         )}
       </p>
+      {paymentMode === "emi" && (
+        <p className="text-xs text-center mt-1 text-gray-500">
+          (Full product amount will be authorized by the payment gateway)
+        </p>
+      )}
     </div>
   ) : (
     <ManualPayment 

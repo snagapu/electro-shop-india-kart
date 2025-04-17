@@ -60,14 +60,7 @@ const Payment: React.FC = () => {
   const selectedEMIOption = emiOptions.find(option => option.tenure === selectedTenure);
   
   const getPaymentAmount = () => {
-    if (paymentMode === "full") {
-      return orderTotal / 100;
-    } else if (useHybridPayment && selectedEMIOption) {
-      return upfrontAmount;
-    } else if (selectedEMIOption) {
-      return selectedEMIOption.monthlyAmount;
-    }
-    return 0;
+    return orderTotal / 100;
   };
 
   const handleSelectTenure = (tenure: number) => {

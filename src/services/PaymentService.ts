@@ -71,15 +71,15 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('txndatetime', txnDateTime);
     addField('txntype', 'sale');
     
-    // Format amount correctly - Fiserv expects the amount in decimal format with 2 decimal places
-    // Don't multiply by 100 since we're already getting the proper amount from the calling function
+    // Format amount correctly - Always use the full amount (totalAmount) as chargetotal
+    // This is important for hash calculation - we always charge the full product amount regardless of EMI
     const formattedAmount = Number(paymentData.amount).toFixed(2);
     addField('chargetotal', formattedAmount);
     
     // Set currency code
     addField('currency', '356'); // INR currency code
     
-    // Add EMI related fields if applicable
+    // Add EMI related fields if applicable, but don't change the chargetotal
     if (paymentData.isEmi && paymentData.emiTenure) {
       addField('emiFlag', 'Y');
       addField('emiScheme', 'DEFAULT');
@@ -89,9 +89,10 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
       if (paymentData.isHybridPayment && paymentData.amount > 0) {
         addField('hybridPayment', 'Y');
         
-        // For hybrid payment, firstPaymentAmount should be the upfront amount 
-        // which is already properly formatted in amount
-        addField('firstPaymentAmount', formattedAmount);
+        // For hybrid payment, firstPaymentAmount is the upfront amount
+        // But we don't calculate this into chargetotal - chargetotal is always the full product amount
+        const upfrontAmount = Number(paymentData.amount).toFixed(2);
+        addField('firstPaymentAmount', upfrontAmount);
       }
     }
     
