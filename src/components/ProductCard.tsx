@@ -15,7 +15,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { name, price, image, description } = product;
 
   // Format price in AED
-  const formattedPrice = new Intl.NumberFormat("ar-AE", {
+  const formattedPrice = new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "AED",
     maximumFractionDigits: 3,
