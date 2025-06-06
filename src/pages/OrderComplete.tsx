@@ -1,9 +1,8 @@
 
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Calendar, CreditCard, BadgePercent } from "lucide-react";
-// import { formatIndianRupees } from "@/utils/emiUtils";
 
 interface EMIDetails {
   isEmi: boolean;
@@ -16,38 +15,67 @@ interface EMIDetails {
 
 const OrderComplete: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [orderId, setOrderId] = useState<string | null>(null);
   const [orderDate, setOrderDate] = useState<string | null>(null);
-  // const [emiDetails, setEmiDetails] = useState<EMIDetails | null>(null);
 
   useEffect(() => {
+    // Check URL params first (from payment gateway redirect)
+    const urlOrderId = searchParams.get('orderId');
+    const urlStatus = searchParams.get('status');
+    
+    console.log("OrderComplete - URL params:", { urlOrderId, urlStatus });
+    
+    // Check session storage
     const storedOrderId = sessionStorage.getItem("orderId");
     const storedOrderDate = sessionStorage.getItem("orderDate");
-    // const storedEmiDetails = sessionStorage.getItem("emiDetails");
     
-    if (!storedOrderId) {
+    console.log("OrderComplete - Session storage:", { storedOrderId, storedOrderDate });
+    
+    // Use URL order ID if available, otherwise use stored order ID
+    const finalOrderId = urlOrderId || storedOrderId;
+    
+    if (!finalOrderId) {
+      console.log("No order ID found, redirecting to home");
       navigate("/");
       return;
     }
     
-    setOrderId(storedOrderId);
+    setOrderId(finalOrderId);
+    
+    // If we got order ID from URL but not in session, store it
+    if (urlOrderId && !storedOrderId) {
+      sessionStorage.setItem("orderId", urlOrderId);
+    }
     
     if (storedOrderDate) {
-      const formattedDate = new Date(storedOrderDate).toLocaleDateString("en-IN", {
+      const formattedDate = new Date(storedOrderDate).toLocaleDateString("en-AE", {
         day: "numeric",
         month: "long",
         year: "numeric",
       });
       setOrderDate(formattedDate);
+    } else {
+      // If no stored date, use current date
+      const currentDate = new Date().toLocaleDateString("en-AE", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+      setOrderDate(currentDate);
+      sessionStorage.setItem("orderDate", new Date().toISOString());
     }
-    
-    // if (storedEmiDetails) {
-    //   setEmiDetails(JSON.parse(storedEmiDetails));
-    // }
-  }, [navigate]);
+  }, [navigate, searchParams]);
 
-  if (!orderId) {
-    return null;
+  // Show loading state while checking for order ID
+  if (orderId === null) {
+    return (
+      <div className="container mx-auto px-4 py-12 max-w-3xl">
+        <div className="bg-white rounded-lg shadow-sm p-8 border text-center">
+          <p>Loading order details...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -71,42 +99,6 @@ const OrderComplete: React.FC = () => {
             <CreditCard className="h-5 w-5 text-gray-500 mr-2" />
             <span className="text-gray-700">Order ID: {orderId}</span>
           </div>
-          
-          {/* {emiDetails && emiDetails.isEmi && (
-            <div className="mt-6 border-t pt-6">
-              <div className="flex items-center mb-4">
-                <BadgePercent className="h-5 w-5 text-brand-teal mr-2" />
-                <span className="text-lg font-medium">EMI Payment Details</span>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div>
-                  <p className="text-sm text-gray-500">Tenure</p>
-                  <p className="font-medium">{emiDetails.tenure} Months</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Monthly Amount</p>
-                  <p className="font-medium">{formatIndianRupees(emiDetails.monthlyAmount)}</p>
-                </div>
-                {emiDetails.isHybrid && (
-                  <>
-                    <div>
-                      <p className="text-sm text-gray-500">Upfront Payment</p>
-                      <p className="font-medium">{formatIndianRupees(emiDetails.upfrontAmount)}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Total Amount</p>
-                      <p className="font-medium">{formatIndianRupees(emiDetails.totalAmount)}</p>
-                    </div>
-                  </>
-                )}
-              </div>
-              
-              <div className="mt-4 p-3 bg-blue-50 text-blue-800 rounded-md text-sm">
-                EMI payments will be automatically charged to your card on the same date each month.
-              </div>
-            </div>
-          )} */}
         </div>
         
         <Button onClick={() => navigate("/")} className="w-full">
