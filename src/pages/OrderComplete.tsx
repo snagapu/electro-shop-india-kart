@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Calendar, CreditCard, BadgePercent } from "lucide-react";
-import { formatIndianRupees } from "@/utils/emiUtils";
+// import { formatIndianRupees } from "@/utils/emiUtils";
 
-interface EMIDetails {
+// interface EMIDetails {
   isEmi: boolean;
   tenure: number;
   monthlyAmount: number;
@@ -18,12 +18,12 @@ const OrderComplete: React.FC = () => {
   const navigate = useNavigate();
   const [orderId, setOrderId] = useState<string | null>(null);
   const [orderDate, setOrderDate] = useState<string | null>(null);
-  const [emiDetails, setEmiDetails] = useState<EMIDetails | null>(null);
+  // const [emiDetails, setEmiDetails] = useState<EMIDetails | null>(null);
 
   useEffect(() => {
     const storedOrderId = sessionStorage.getItem("orderId");
     const storedOrderDate = sessionStorage.getItem("orderDate");
-    const storedEmiDetails = sessionStorage.getItem("emiDetails");
+    // const storedEmiDetails = sessionStorage.getItem("emiDetails");
     
     if (!storedOrderId) {
       navigate("/");
@@ -41,10 +41,10 @@ const OrderComplete: React.FC = () => {
       setOrderDate(formattedDate);
     }
     
-    if (storedEmiDetails) {
-      setEmiDetails(JSON.parse(storedEmiDetails));
-    }
-  }, [navigate]);
+  //   if (storedEmiDetails) {
+  //     setEmiDetails(JSON.parse(storedEmiDetails));
+  //   }
+  // }, [navigate]);
 
   if (!orderId) {
     return null;
@@ -72,7 +72,7 @@ const OrderComplete: React.FC = () => {
             <span className="text-gray-700">Order ID: {orderId}</span>
           </div>
           
-          {emiDetails && emiDetails.isEmi && (
+{/*           {emiDetails && emiDetails.isEmi && (
             <div className="mt-6 border-t pt-6">
               <div className="flex items-center mb-4">
                 <BadgePercent className="h-5 w-5 text-brand-teal mr-2" />
@@ -107,6 +107,7 @@ const OrderComplete: React.FC = () => {
               </div>
             </div>
           )}
+           */}
         </div>
         
         <Button onClick={() => navigate("/")} className="w-full">
