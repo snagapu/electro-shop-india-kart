@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useCart } from "@/context/CartContext";
 
@@ -13,18 +12,17 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ showItems = false }) => {
   const taxRate = 0.18;
   const taxes = totalPrice * taxRate;
   
-  // Free shipping over ₹5000, otherwise ₹499
+  // Free shipping over AED 5000, otherwise AED 499
   const shippingThreshold = 5000;
   const shippingCost = totalPrice > shippingThreshold ? 0 : 499;
   
   // Total including taxes and shipping
   const orderTotal = totalPrice + taxes + shippingCost;
   
-  // Format all prices in INR
+  // Format all prices in AED
   const formatPrice = (amount: number) => {
-    return new Intl.NumberFormat("en-IN", {
+    return new Intl.NumberFormat("ar-AE", {
       style: "currency",
-      // currency: "INR",
       currency: "AED",
       maximumFractionDigits: 0,
     }).format(amount);

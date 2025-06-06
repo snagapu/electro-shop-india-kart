@@ -15,7 +15,7 @@ const Home: React.FC = () => {
             Discover the latest in technology with our premium selection of electronic appliances at competitive prices.
           </p>
           <div className="bg-white/20 p-3 rounded-lg inline-block">
-            <p className="text-sm font-semibold">Free shipping on orders over ₹5,000</p>
+            <p className="text-sm font-semibold">Free shipping on orders over AED 5,000</p>
           </div>
         </div>
       </section>

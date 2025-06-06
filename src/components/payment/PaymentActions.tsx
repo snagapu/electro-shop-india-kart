@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { EMIOption } from "@/utils/emiUtils";
@@ -26,9 +25,8 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({
   onManualPaymentSubmit,
 }) => {
   const formatAmount = (amount: number): string => {
-    return new Intl.NumberFormat("en-IN", {
+    return new Intl.NumberFormat("ar-AE", {
       style: "currency",
-      // currency: "INR",
       currency: "AED",
       maximumFractionDigits: 0,
     }).format(amount);

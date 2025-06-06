@@ -1,3 +1,4 @@
+
 // EMI calculation utilities
 
 /**
@@ -96,12 +97,12 @@ export const calculateRemainingPrincipal = (
 };
 
 /**
- * Format price in Indian Rupees
+ * Format price in AED
  */
 export const formatIndianRupees = (amount: number): string => {
-  return new Intl.NumberFormat("en-IN", {
+  return new Intl.NumberFormat("ar-AE", {
     style: "currency",
-    currency: "INR",
+    currency: "AED",
     maximumFractionDigits: 0,
   }).format(amount);
 };
