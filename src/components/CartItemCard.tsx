@@ -14,16 +14,16 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
   const { id, name, price, image, quantity } = item;
 
   // Format price in AED
-  const formattedPrice = new Intl.NumberFormat("en-AED", {
+  const formattedPrice = new Intl.NumberFormat("ar-AE", {
     style: "currency",
     currency: "AED",
     maximumFractionDigits: 3,
   }).format(price);
 
-  const totalPrice = new Intl.NumberFormat("en-AED", {
+  const totalPrice = new Intl.NumberFormat("ar-AE", {
     style: "currency",
     currency: "AED",
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 3,
   }).format(price * quantity);
 
   return (
