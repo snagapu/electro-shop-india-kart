@@ -84,7 +84,8 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('chargetotal', formattedAmount);
     
     // Set currency code
-    addField('currency', '356'); // INR currency code
+    // addField('currency', '356'); // INR currency code
+    addField('currency', '702'); //SGD currency code
     
     // REMOVED EMI PARAMETERS - This was causing hash calculation errors
     // No longer adding emiFlag, emiScheme, emiTenure, or hybridPayment parameters
