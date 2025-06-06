@@ -67,10 +67,10 @@ export const products: Product[] = [
   },
   {
     id: 8,
-    name: "Bluetooth Portable Speaker",
-    price: 5499,
+    name: "LG Inverter Air Conditioner",
+    price: 54990,
     image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?q=80&w=800&auto=format&fit=crop",
-    description: "Enjoy rich, powerful sound anywhere with this portable Bluetooth speaker featuring 20 hours of playback and waterproof design.",
-    category: "Audio"
+    description: "Enjoy cool air conditioning for hot summer weather.",
+    category: "Home Improvements"
   }
 ];
