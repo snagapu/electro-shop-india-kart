@@ -28,7 +28,8 @@ const PaymentActions: React.FC<PaymentActionsProps> = ({
   const formatAmount = (amount: number): string => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "INR",
+      // currency: "INR",
+      currency: "AED",
       maximumFractionDigits: 0,
     }).format(amount);
   };
