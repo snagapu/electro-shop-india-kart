@@ -59,7 +59,8 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('language', 'en_US');
     
     // Updated store ID
-    addField('storename', '3300000901');
+    // addField('storename', '3300000901');
+    addField('storename', '451020304050');
     
     // Transaction details
     const timezone = 'Asia/Kolkata';
