@@ -97,7 +97,8 @@ const Payment: React.FC = () => {
       setTimeout(async () => {
         const success = await initiateHostedCheckout({
           amount: paymentAmount,
-          currency: 'INR',
+          // currency: 'INR',
+          currency: 'AED',
           orderId: orderId,
           customerEmail: parsedUserDetails.email,
           customerName: parsedUserDetails.name,
