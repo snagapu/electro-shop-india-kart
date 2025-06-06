@@ -24,7 +24,8 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({ showItems = false }) => {
   const formatPrice = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "INR",
+      // currency: "INR",
+      currency: "AED",
       maximumFractionDigits: 0,
     }).format(amount);
   };
