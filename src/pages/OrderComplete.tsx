@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Calendar, CreditCard, BadgePercent } from "lucide-react";
 // import { formatIndianRupees } from "@/utils/emiUtils";
 
-// interface EMIDetails {
+interface EMIDetails {
   isEmi: boolean;
   tenure: number;
   monthlyAmount: number;
@@ -41,10 +41,10 @@ const OrderComplete: React.FC = () => {
       setOrderDate(formattedDate);
     }
     
-  //   if (storedEmiDetails) {
-  //     setEmiDetails(JSON.parse(storedEmiDetails));
-  //   }
-  // }, [navigate]);
+    // if (storedEmiDetails) {
+    //   setEmiDetails(JSON.parse(storedEmiDetails));
+    // }
+  }, [navigate]);
 
   if (!orderId) {
     return null;
@@ -72,7 +72,7 @@ const OrderComplete: React.FC = () => {
             <span className="text-gray-700">Order ID: {orderId}</span>
           </div>
           
-{/*           {emiDetails && emiDetails.isEmi && (
+          {/* {emiDetails && emiDetails.isEmi && (
             <div className="mt-6 border-t pt-6">
               <div className="flex items-center mb-4">
                 <BadgePercent className="h-5 w-5 text-brand-teal mr-2" />
@@ -106,8 +106,7 @@ const OrderComplete: React.FC = () => {
                 EMI payments will be automatically charged to your card on the same date each month.
               </div>
             </div>
-          )}
-           */}
+          )} */}
         </div>
         
         <Button onClick={() => navigate("/")} className="w-full">

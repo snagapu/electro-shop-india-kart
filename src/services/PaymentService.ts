@@ -117,9 +117,9 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     // Order ID
     addField('oid', paymentData.orderId);
     
-    // Updated shared secret
+    // Updated shared secret - fixed the escape sequence
     // const sharedSecret = 'fb9ms8PezB';
-    const sharedSecret = 'ncFFc3F\8"Sx';
+    const sharedSecret = 'ncFFc3F\\8"Sx';
     
     // Create an array of all parameters to include in hash
     const messageParameters: Record<string, string> = {};
