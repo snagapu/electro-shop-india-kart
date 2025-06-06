@@ -60,7 +60,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     
     // Updated store ID
     // addField('storename', '3300000901');
-    addField('storename', '451020304050');
+    addField('storename', '8125000000072');
     
     // Transaction details
     const timezone = 'Asia/Kolkata';
@@ -86,8 +86,9 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     
     // Set currency code
     // addField('currency', '356'); // INR currency code
-    addField('currency', '702'); //SGD currency code
-    
+    // addField('currency', '702'); //SGD currency code
+    addField('currency', '784'); //AED currency code
+
     // REMOVED EMI PARAMETERS - This was causing hash calculation errors
     // No longer adding emiFlag, emiScheme, emiTenure, or hybridPayment parameters
     
@@ -118,7 +119,7 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     
     // Updated shared secret
     // const sharedSecret = 'fb9ms8PezB';
-    const sharedSecret = 'sharedsecret';
+    const sharedSecret = 'ncFFc3F\8"Sx';
     
     // Create an array of all parameters to include in hash
     const messageParameters: Record<string, string> = {};

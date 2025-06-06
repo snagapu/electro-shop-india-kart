@@ -14,11 +14,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addToCart } = useCart();
   const { name, price, image, description } = product;
 
-  // Format price in INR
-  const formattedPrice = new Intl.NumberFormat("en-IN", {
+  // Format price in AED
+  const formattedPrice = new Intl.NumberFormat("ar-AE", {
     style: "currency",
     currency: "AED",
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 3,
   }).format(price);
 
   return (
