@@ -17,7 +17,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   // Format price in INR
   const formattedPrice = new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "SGD",
+    currency: "AED",
     maximumFractionDigits: 0,
   }).format(price);
 
