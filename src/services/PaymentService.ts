@@ -63,8 +63,8 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('storename', '451020304050');
     
     // Transaction details
-    // const timezone = 'Asia/Kolkata';
-    const timezone = 'Asia/Singapore';
+    const timezone = 'Asia/Kolkata';
+    // const timezone = 'Asia/Singapore';
     
     // Format date manually
     const now = new Date();
