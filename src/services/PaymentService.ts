@@ -116,7 +116,8 @@ export const initiateHostedCheckout = async (paymentData: PaymentData) => {
     addField('oid', paymentData.orderId);
     
     // Updated shared secret
-    const sharedSecret = 'fb9ms8PezB';
+    // const sharedSecret = 'fb9ms8PezB';
+    const sharedSecret = 'sharedsecret';
     
     // Create an array of all parameters to include in hash
     const messageParameters: Record<string, string> = {};
