@@ -9,7 +9,7 @@ const Home: React.FC = () => {
       <section className="mb-12">
         <div className="bg-gradient-to-r from-brand-blue to-brand-teal text-white rounded-lg p-8 md:p-12 shadow-lg">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            Welcome to ElectroShop
+            Welcome to Shri's ElectroShop
           </h1>
           <p className="text-lg md:text-xl mb-6 max-w-2xl">
             Discover the latest in technology with our premium selection of electronic appliances at competitive prices.
